@@ -29,23 +29,35 @@ const url = require('url');
 // });
 ////////////////////////////
 //SERVER
+
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const dataObj = JSON.parse(data);
+
 //we use the createserver we use a method on the object, this accepts a callback function, this callback gets the request and response variable. We want to send a response to the client with res.end. Each time a new request hits our server the callback will be called the callback function will have access to the  request object which holds all kind of stuff like request url. response object gives us alot of tools with dealing alot of response such as .end(method). Simplest way to send back a simple response. 
 const server = http.createServer((req, res) => {
-    const pathName = req.url;
+	const pathName = req.url;
 
-    if (pathName === '/' || pathName === '/overview') {
-        res.end('This is the OVERVIEW');
-    } else if (pathName === '/product') {
-        res.end('This is the PRODUCT');
-    } else {
-        res.writeHead(404, {
-            'Content-type': 'text/html'
-        });
-        res.end('<h1>This page not found!</h1>');
-    }
+	if (pathName === '/' || pathName === '/overview') {
+		res.end('This is the OVERVIEW');
+	} else if (pathName === '/product') {
+		res.end('This is the PRODUCT');
+	} else if (pathName === '/api') {
+		fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
+			const productData = JSON.parse(data);
+			res.writeHead(200, { 'Content-type': 'application/json' })
+			res.end(data);
+		});
+
+	} else {
+		res.writeHead(404, {
+			'Content-type': 'text/html'
+		});
+		res.end('<h1>This page not found!</h1>');
+	}
 });
 
 server.listen(8000, '127.0.0.1', () => {
-    console.log('Listening to requests on port 8000');
+	console.log('Listening to requests on port 8000');
 }); //will start listening to incoming request starting up the server. We can run a callback function that will run the server.
 
