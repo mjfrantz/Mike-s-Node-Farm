@@ -51,11 +51,11 @@ const dataObj = JSON.parse(data);
 
 //we use the createserver we use a method on the object, this accepts a callback function, this callback gets the request and response variable. We want to send a response to the client with res.end. Each time a new request hits our server the callback will be called the callback function will have access to the  request object which holds all kind of stuff like request url. response object gives us alot of tools with dealing alot of response such as .end(method). Simplest way to send back a simple response. 
 const server = http.createServer((req, res) => {
-	const pathName = req.url;
 
+	const { query, pathname } = url.parse(req.url, true);
 
 	//Overview Page
-	if (pathName === '/' || pathName === '/overview') {
+	if (pathname === '/' || pathname === '/overview') {
 
 		res.writeHead(200, { 'Content-type': 'text/html' });
 
@@ -64,8 +64,11 @@ const server = http.createServer((req, res) => {
 		res.end(output);
 
 		//Product Page
-	} else if (pathName === '/product') {
-		res.end('This is the PRODUCT');
+	} else if (pathname === '/product') {
+		res.writeHead(200, { 'Content-type': 'text/html' });
+		const product = dataObj[query.id];
+		const output = replaceTemplate(tempProduct, product);
+		res.end(output);
 
 		//API
 	} else if (pathName === '/api') {
